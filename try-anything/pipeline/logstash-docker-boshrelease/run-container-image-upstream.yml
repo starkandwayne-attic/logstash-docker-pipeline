@@ -27,10 +27,10 @@ properties:
       tag: (( meta.logstash_image.tag ))
       command: ""
       bind_ports:
-        - 514:514
-        - 9200:9200
-        - 9300:9300
-        - 5601:5601
+        - "514:514"
+        - "9200:9200"
+        - "9300:9300"
+        - "5601:5601"
       bind_volumes:
         - "/data"
       memory: "1G"
