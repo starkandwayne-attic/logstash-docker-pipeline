@@ -7,22 +7,24 @@
 # - {name: release-logstash-docker}
 # - {name: stemcell}
 
+set -e
+
 if [[ ! -f release-version/number ]]; then
   echo "save_deployment_pipeline.sh requires release-version/number to contain the candidate version number"
   exit 1
 fi
 release_version=$(cat release-version/number)
 
-mkdir -p pipeline-assets/releases/docker
-mkdir -p pipeline-assets/releases/logstash-docker
-mkdir -p pipeline-assets/stemcell
 
+mkdir -p pipeline-assets/releases/docker
 cp release-docker/* pipeline-assets/releases/docker/
 rm pipeline-assets/releases/docker/*.tgz
 
+mkdir -p pipeline-assets/releases/logstash-docker
 cp release-logstash-docker/* pipeline-assets/releases/logstash-docker/
 rm pipeline-assets/releases/logstash-docker/*.tgz
 
+mkdir -p pipeline-assets/stemcell
 cp stemcell/* pipeline-assets/stemcell/
 rm pipeline-assets/stemcell/*.tgz
 
