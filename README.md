@@ -8,6 +8,10 @@ There are several `pipeline*.yml` to choose from:
 -	`pipeline-try-anything.yml` will deploy a single VM from current upstream BOSH releases & stemcells. Any new releases or stemcells, or changes to `try-anything/environment` or `try-anything/pipeline` templates will trigger a new deployment. It will indeed "try anything".
 -	`pipeline-try-first-then-production.yml` will run two deployments. The first BOSH deployment is like `pipeline-try-anything.yml`. If it successfully deploys, then the winning combination of release/stemcell/templates is passed through to the production deployment.
 
+![try-anything-production](http://cl.ly/image/3w15021g2c1W/try-anything_straight_to_production.png)
+
+-	`pipeline-try-pre-prod-prod.yml` protects production by one additional stage `pre-production`. The `pre-production` stage is triggered by any successful `try-anything` deployment. It first deploys based on the last successful `production`, then upgrades to the last successful `try-anything`. If success, this becomes the candidate for `production`'s next deployment.
+
 The example pipelines all assume the deployments are via the same BOSH - as such only the entry deployment `try-anything` is responsible for uploading releases & stemcells. Other deployments assume that releases & stemcells are uploaded, and benefit from packages being pre-compiled.
 
 Usage
