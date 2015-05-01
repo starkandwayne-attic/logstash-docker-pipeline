@@ -9,10 +9,8 @@ jobs:
     - {get: release-docker, trigger: true}
     - {get: release-logstash-docker, trigger: true}
     - {get: pipeline, resource: git-pipeline, trigger: false}
-    - {get: try-anything-pipeline-changes, trigger: false}
-    - {get: try-anything-env-changes, trigger: false}
-    # - {get: try-anything-pipeline-changes, trigger: true}
-    # - {get: try-anything-env-changes, trigger: true}
+    - {get: try-anything-pipeline-changes, trigger: true}
+    - {get: try-anything-env-changes, trigger: true}
     - {get: release-version, trigger: false, params: {bump: patch}}
   - task: make-manifest
     config:
