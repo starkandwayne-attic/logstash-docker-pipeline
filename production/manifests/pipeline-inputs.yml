@@ -1,7 +1,7 @@
 ---
 meta:
   release_versions:
-    logstash_docker: 1.0
-    docker: 12
+    logstash_docker: "1.0"
+    docker: "12"
   stemcell:
-    version: 2776
+    version: "2776"
