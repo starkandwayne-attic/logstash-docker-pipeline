@@ -17,8 +17,8 @@ pushd $DIR/..
   # TODO - this is a bit unclean; how do we get them out of the git repo in first place?
   rm -rf ../candidate-assets
   rm -rf ../pipeline-assets
-  rm -f stemcell
-  rm -f releases
+  rm -rf stemcell
+  rm -rf releases
   echo "Checking for changes in $(pwd)..."
   if [[ "$(git status -s)X" != "X" ]]; then
     git add . --all
