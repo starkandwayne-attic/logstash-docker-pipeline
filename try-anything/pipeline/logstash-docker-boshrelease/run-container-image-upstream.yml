@@ -1,0 +1,36 @@
+---
+meta:
+  logstash_image:
+    image: cfcommunity/logstash-dev
+    tag: latest
+
+  release_versions:
+    docker: (( merge ))
+    logstash_docker: (( merge ))
+  job_templates:
+    # run docker daemon
+    - {name: docker, release: docker}
+    # do not run cfcommunity_logstash_image template that installs embedded docker image
+    # run containers (see properties.containers)
+    - {name: containers, release: docker}
+
+releases:
+- name: docker
+  version: (( meta.release_versions.docker ))
+- name: logstash-docker
+  version: (( meta.release_versions.logstash_docker ))
+
+properties:
+  containers:
+    - name: logstash
+      image: (( meta.logstash_image.image ))
+      tag: (( meta.logstash_image.tag ))
+      command: ""
+      bind_ports:
+        - 514:514
+        - 9200:9200
+        - 9300:9300
+        - 5601:5601
+      bind_volumes:
+        - "/data"
+      memory: "1G"
