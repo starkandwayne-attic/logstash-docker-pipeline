@@ -30,6 +30,5 @@ update:
 resource_pools:
   - name: small_z1
     network: logstash_docker1
-    size: (( auto ))
     stemcell: (( meta.stemcell ))
     cloud_properties: (( merge ))
