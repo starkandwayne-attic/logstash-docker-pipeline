@@ -11,7 +11,7 @@ meta:
       - 10.244.0.6
 
   stemcell:
-    name: bosh-warden-boshlite-ubuntu
+    name: bosh-warden-boshlite-ubuntu-trusty-go_agent
     version: latest
 
 update:
