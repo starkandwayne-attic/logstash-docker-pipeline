@@ -27,10 +27,10 @@ cp stemcell/* pipeline-assets/stemcell/
 rm pipeline-assets/stemcell/*.tgz
 
 pipeline=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
-cp -r $pipeline/templates pipeline-assets/
+cp -r $pipeline/pipeline pipeline-assets/
 cp -r $pipeline/bin pipeline-assets/
 
-# not /pipeline as each subsequent stage has own pipeline/ folder for its specific differences
+# do not include environment/ folder as each subsequent stage has own environment/ folder for its specific differences
 
 ls -la pipeline-assets/
 
