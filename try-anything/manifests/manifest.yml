@@ -83,9 +83,9 @@ networks:
 properties:
   containers:
   - bind_ports:
-    - 31354
-    - 561200
-    - 567300
+    - "514:514"
+    - "9200:9200"
+    - "9300:9300"
     bind_volumes:
     - /data
     command: ""
