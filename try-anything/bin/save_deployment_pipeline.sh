@@ -3,7 +3,8 @@
 # Inputs are:
 # - {name: make-manifest, path: .}
 # - {name: release-version}
-# - {name: release-redis}
+# - {name: release-docker}
+# - {name: release-logstash-docker}
 # - {name: stemcell}
 
 if [[ ! -f release-version/number ]]; then
@@ -12,11 +13,15 @@ if [[ ! -f release-version/number ]]; then
 fi
 release_version=$(cat release-version/number)
 
-mkdir -p pipeline-assets/releases/redis
+mkdir -p pipeline-assets/releases/docker
+mkdir -p pipeline-assets/releases/logstash-docker
 mkdir -p pipeline-assets/stemcell
 
-cp release-redis/* pipeline-assets/releases/redis/
-rm pipeline-assets/releases/redis/*.tgz
+cp release-docker/* pipeline-assets/releases/docker/
+rm pipeline-assets/releases/docker/*.tgz
+
+cp release-logstash-docker/* pipeline-assets/releases/logstash-docker/
+rm pipeline-assets/releases/logstash-docker/*.tgz
 
 cp stemcell/* pipeline-assets/stemcell/
 rm pipeline-assets/stemcell/*.tgz
