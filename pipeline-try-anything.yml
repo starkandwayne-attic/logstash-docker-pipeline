@@ -41,7 +41,7 @@ jobs:
   - put: deployment-try-anything
     params:
       manifest: make-manifest/try-anything/manifests/manifest.yml
-      releases: [release-logstash-docker/*.tgz]
+      releases: [release-*/*.tgz]
       stemcells: [stemcell/*.tgz]
 
   - put: release-version
@@ -105,7 +105,7 @@ resources:
     target: {{bosh-target}}
     username: {{bosh-username}}
     password: {{bosh-password}}
-    deployment: try-anything
+    deployment: logstash-docker-try-anything
     ignore_ssl: true
 
 - name: release-version
