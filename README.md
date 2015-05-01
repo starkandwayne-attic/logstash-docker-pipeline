@@ -12,6 +12,8 @@ There are several `pipeline*.yml` to choose from:
 
 -	`pipeline-try-pre-prod-prod.yml` protects production by one additional stage `pre-production`. The `pre-production` stage is triggered by any successful `try-anything` deployment. It first deploys based on the last successful `production`, then upgrades to the last successful `try-anything`. If success, this becomes the candidate for `production`'s next deployment.
 
+![pre-prod](http://cl.ly/image/3s3P271d3703/pre-prod.png)
+
 The example pipelines all assume the deployments are via the same BOSH - as such only the entry deployment `try-anything` is responsible for uploading releases & stemcells. Other deployments assume that releases & stemcells are uploaded, and benefit from packages being pre-compiled.
 
 Usage
