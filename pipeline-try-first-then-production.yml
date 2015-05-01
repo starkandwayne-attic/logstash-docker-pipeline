@@ -9,8 +9,10 @@ jobs:
     - {get: release-docker, trigger: true}
     - {get: release-logstash-docker, trigger: true}
     - {get: pipeline, resource: git-pipeline, trigger: false}
-    - {get: try-anything-pipeline-changes, trigger: true}
-    - {get: try-anything-env-changes, trigger: true}
+    - {get: try-anything-pipeline-changes, trigger: false}
+    - {get: try-anything-env-changes, trigger: false}
+    # - {get: try-anything-pipeline-changes, trigger: true}
+    # - {get: try-anything-env-changes, trigger: true}
     - {get: release-version, trigger: false, params: {bump: patch}}
   - task: make-manifest
     config:
@@ -59,6 +61,59 @@ jobs:
   - put: s3-candidate-assets
     params: {from: save-deployment-pipeline/pipeline-assets-(.*).tgz}
 
+- name: deploy-production
+  public: true
+  serial: true
+  serial_groups: [production]
+  plan:
+  - aggregate:
+    - get: candidate-assets
+      resource: s3-candidate-assets
+      passed: [deploy-try-anything]
+      trigger: true
+    - {get: pipeline, resource: git-pipeline, trigger: false}
+
+    # disabled during initial development
+    - {get: production-env-changes, trigger: false}
+    # - {get: production-env-changes, trigger: true}
+    - {get: release-version, passed: [deploy-try-anything], trigger: false}
+  - task: unpack-assets
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: pipeline, path: .}
+      - {name: candidate-assets}
+      run:
+        path: ./production/bin/unpack_assets.sh
+        args: ["candidate-assets/pipeline-assets-*.tgz", "production"]
+  - task: make-manifest
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: unpack-assets, path: .}
+      run: {path: ./production/bin/make_manifest_and_save.sh}
+  - task: git-add
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - name: make-manifest
+      run:
+        path: ./make-manifest/production/bin/git-add-stage-changes.sh
+        args: ["[production] Update manifest"]
+  - put: git-pipeline
+    params:
+      repository: git-add/make-manifest
+      rebase: true
+
+  - put: deployment-production
+    params:
+      manifest: make-manifest/production/manifests/manifest.yml
+      releases: []
+      stemcells: []
+
 resources:
 - name: stemcell
   type: bosh-io-stemcell
@@ -97,6 +152,14 @@ resources:
     private_key: {{github-private-key}}
     paths: [try-anything/pipeline]
 
+- name: production-env-changes
+  type: git
+  source:
+    uri: {{pipeline-git-repo}}
+    branch: {{pipeline-branch}}
+    private_key: {{github-private-key}}
+    paths: [production/environment]
+
 - name: deployment-try-anything
   type: bosh-deployment
   source:
@@ -104,6 +167,15 @@ resources:
     username: {{bosh-username}}
     password: {{bosh-password}}
     deployment: logstash-docker-try-anything
+    ignore_ssl: true
+
+- name: deployment-production
+  type: bosh-deployment
+  source:
+    target: {{bosh-target}}
+    username: {{bosh-username}}
+    password: {{bosh-password}}
+    deployment: logstash-docker-production
     ignore_ssl: true
 
 - name: release-version
