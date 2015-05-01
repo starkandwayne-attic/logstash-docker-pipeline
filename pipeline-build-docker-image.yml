@@ -15,7 +15,7 @@ resources:
 - name: git-pipeline-docker-image
   type: git
   source:
-    uri: git@github.com:drnic/logstash-docker-pipeline.git
+    uri: {{pipeline-git-repo}}
     branch: master
     private_key: {{github-private-key}}
     paths: [task_docker_image/*]
