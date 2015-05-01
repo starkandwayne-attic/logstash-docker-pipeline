@@ -1,2 +1,3 @@
 ---
-name: logstash-docker-try-anything
+meta:
+  name: logstash-docker-try-anything
