@@ -29,10 +29,10 @@ cat >manifests/pipeline-inputs.yml <<EOF
 ---
 meta:
   release_versions:
-    logstash_docker: $LOGSTASH_DOCKER_VERSION
-    docker: $DOCKER_VERSION
+    logstash_docker: "$LOGSTASH_DOCKER_VERSION"
+    docker: "$DOCKER_VERSION"
   stemcell:
-    version: $STEMCELL_VERSION
+    version: "$STEMCELL_VERSION"
 EOF
 
 spiff merge \
