@@ -21,7 +21,7 @@ jobs:
       - {name: stemcell, path: try-anything/stemcell}
       - {name: release-docker, path: try-anything/releases/docker}
       - {name: release-logstash-docker, path: try-anything/releases/logstash-docker}
-      run: {path: ./try-anything/bin/make_manifest_and_save.sh}
+      run: {path: ./try-anything/bin/create_stub_make_manifest_and_save.sh}
   - task: git-add
     config:
       platform: linux

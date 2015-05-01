@@ -23,7 +23,7 @@ jobs:
       - {name: stemcell, path: try-anything/stemcell}
       - {name: release-docker, path: try-anything/releases/docker}
       - {name: release-logstash-docker, path: try-anything/releases/logstash-docker}
-      run: {path: ./try-anything/bin/make_manifest_and_save.sh}
+      run: {path: ./try-anything/bin/create_stub_make_manifest_and_save.sh}
   - task: git-add
     config:
       platform: linux
@@ -77,7 +77,24 @@ jobs:
     - {get: production-env-changes, trigger: false}
     # - {get: production-env-changes, trigger: true}
     - {get: release-version, passed: [deploy-try-anything], trigger: false}
-  - task: unpack-assets
+  - task: copy-production-assets
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: pipeline, path: .}
+      - {name: candidate-assets}
+      run:
+        path: ./pre-production/bin/copy_assets.sh
+        args: ["production"]
+  - task: make-manifest
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: unpack-assets, path: .}
+      run: {path: ./pre-production/bin/reuse_stub_make_manifest_and_save.sh}
+  - task: unpack-candidate-assets
     config:
       platform: linux
       image: {{docker-hub-task-image}}
@@ -93,7 +110,7 @@ jobs:
       image: {{docker-hub-task-image}}
       inputs:
       - {name: unpack-assets, path: .}
-      run: {path: ./pre-production/bin/make_manifest_and_save.sh}
+      run: {path: ./pre-production/bin/create_stub_make_manifest_and_save.sh}
   - task: git-add
     config:
       platform: linux
@@ -145,7 +162,7 @@ jobs:
       image: {{docker-hub-task-image}}
       inputs:
       - {name: unpack-assets, path: .}
-      run: {path: ./production/bin/make_manifest_and_save.sh}
+      run: {path: ./production/bin/create_stub_make_manifest_and_save.sh}
   - task: git-add
     config:
       platform: linux
