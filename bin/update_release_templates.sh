@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Manually copy over upstream templates
+# TODO: Normally the pipeline will do this if upstream templates git repo changes
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 bosh_release_path=$1; shift

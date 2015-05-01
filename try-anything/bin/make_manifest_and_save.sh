@@ -6,4 +6,5 @@ manifest=${manifest:-"manifests/manifest.yml"}
 set -e
 
 cd $DIR/..
+mkdir -p manifests
 ./bin/make_manifest.sh $@ > $manifest
