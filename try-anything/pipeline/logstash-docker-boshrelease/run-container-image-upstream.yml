@@ -16,9 +16,9 @@ meta:
 
 releases:
 - name: docker
-  version: (( meta.release_versions.docker ))
+  version: "(( meta.release_versions.docker ))"
 - name: logstash-docker
-  version: (( meta.release_versions.logstash_docker ))
+  version: "(( meta.release_versions.logstash_docker ))"
 
 properties:
   containers:
