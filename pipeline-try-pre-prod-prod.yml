@@ -62,10 +62,9 @@ jobs:
   - put: s3-candidate-assets
     params: {from: save-deployment-pipeline/pipeline-assets-(.*).tgz}
 
-- name: deploy-production
+- name: deploy-pre-production
   public: true
   serial: true
-  serial_groups: [production]
   plan:
   - aggregate:
     - get: candidate-assets
@@ -78,6 +77,58 @@ jobs:
     - {get: production-env-changes, trigger: false}
     # - {get: production-env-changes, trigger: true}
     - {get: release-version, passed: [deploy-try-anything], trigger: false}
+  - task: unpack-assets
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: pipeline, path: .}
+      - {name: candidate-assets}
+      run:
+        path: ./pre-production/bin/unpack_assets.sh
+        args: ["candidate-assets/pipeline-assets-*.tgz", "pre-production"]
+  - task: make-manifest
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - {name: unpack-assets, path: .}
+      run: {path: ./pre-production/bin/make_manifest_and_save.sh}
+  - task: git-add
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs:
+      - name: make-manifest
+      run:
+        path: ./make-manifest/pre-production/bin/git-add-stage-changes.sh
+        args: ["[pre-production] Update manifest"]
+  - put: git-pipeline
+    params:
+      repository: git-add/make-manifest
+      rebase: true
+
+  - put: deployment-pre-production
+    params:
+      manifest: make-manifest/pre-production/manifests/manifest.yml
+      releases: []
+      stemcells: []
+
+- name: deploy-production
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: candidate-assets
+      resource: s3-candidate-assets
+      passed: [deploy-pre-production]
+      trigger: true
+    - {get: pipeline, resource: git-pipeline, trigger: false}
+
+    # disabled during initial development
+    - {get: production-env-changes, trigger: false}
+    # - {get: production-env-changes, trigger: true}
+    - {get: release-version, passed: [deploy-pre-production], trigger: false}
   - task: unpack-assets
     config:
       platform: linux
@@ -153,6 +204,14 @@ resources:
     private_key: {{github-private-key}}
     paths: [try-anything/pipeline]
 
+- name: pre-production-env-changes
+  type: git
+  source:
+    uri: {{pipeline-git-repo}}
+    branch: {{pipeline-branch}}
+    private_key: {{github-private-key}}
+    paths: [pre-production/environment]
+
 - name: production-env-changes
   type: git
   source:
@@ -168,6 +227,15 @@ resources:
     username: {{bosh-username}}
     password: {{bosh-password}}
     deployment: logstash-docker-try-anything
+    ignore_ssl: true
+
+- name: deployment-pre-production
+  type: bosh-deployment
+  source:
+    target: {{bosh-target}}
+    username: {{bosh-username}}
+    password: {{bosh-password}}
+    deployment: logstash-docker-pre-prod
     ignore_ssl: true
 
 - name: deployment-production
