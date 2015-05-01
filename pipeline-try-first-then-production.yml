@@ -54,6 +54,7 @@ jobs:
       inputs:
       - {name: release-version}
       - {name: make-manifest, path: .}
+      - {name: release-docker}
       - {name: release-logstash-docker}
       - {name: stemcell}
       run: {path: ./try-anything/bin/save_deployment_pipeline.sh}
