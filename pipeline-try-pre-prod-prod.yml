@@ -71,29 +71,39 @@ jobs:
       resource: s3-candidate-assets
       passed: [deploy-try-anything]
       trigger: true
+    - get: production-assets
+      resource: s3-candidate-assets
+      passed: [deploy-production]
+      trigger: false
     - {get: pipeline, resource: git-pipeline, trigger: false}
 
     # disabled during initial development
     - {get: production-env-changes, trigger: false}
     # - {get: production-env-changes, trigger: true}
     - {get: release-version, passed: [deploy-try-anything], trigger: false}
-  - task: copy-production-assets
+  - task: unpack-production-assets
     config:
       platform: linux
       image: {{docker-hub-task-image}}
       inputs:
       - {name: pipeline, path: .}
-      - {name: candidate-assets}
+      - {name: production-assets}
       run:
-        path: ./pre-production/bin/copy_assets.sh
-        args: ["production"]
-  - task: make-manifest
+        path: ./pre-production/bin/unpack_assets.sh
+        args: ["production-assets/pipeline-assets-*.tgz", "pre-production"]
+  - task: make-manifest-from-prod
     config:
       platform: linux
       image: {{docker-hub-task-image}}
       inputs:
-      - {name: unpack-assets, path: .}
-      run: {path: ./pre-production/bin/reuse_stub_make_manifest_and_save.sh}
+      - {name: unpack-production-assets, path: .}
+      run: {path: ./pre-production/bin/create_stub_make_manifest_and_save.sh}
+  - put: deployment-pre-production
+    params:
+      manifest: make-manifest-from-prod/pre-production/manifests/manifest.yml
+      releases: []
+      stemcells: []
+
   - task: unpack-candidate-assets
     config:
       platform: linux
@@ -104,30 +114,30 @@ jobs:
       run:
         path: ./pre-production/bin/unpack_assets.sh
         args: ["candidate-assets/pipeline-assets-*.tgz", "pre-production"]
-  - task: make-manifest
+  - task: make-manifest-from-candidate
     config:
       platform: linux
       image: {{docker-hub-task-image}}
       inputs:
-      - {name: unpack-assets, path: .}
+      - {name: unpack-candidate-assets, path: .}
       run: {path: ./pre-production/bin/create_stub_make_manifest_and_save.sh}
   - task: git-add
     config:
       platform: linux
       image: {{docker-hub-task-image}}
       inputs:
-      - name: make-manifest
+      - name: make-manifest-from-candidate
       run:
-        path: ./make-manifest/pre-production/bin/git-add-stage-changes.sh
-        args: ["[pre-production] Update manifest"]
+        path: ./make-manifest-from-candidate/pre-production/bin/git-add-stage-changes.sh
+        args: ["[pre-production] Update manifest to test production upgrade"]
   - put: git-pipeline
     params:
-      repository: git-add/make-manifest
+      repository: git-add/make-manifest-from-candidate
       rebase: true
 
   - put: deployment-pre-production
     params:
-      manifest: make-manifest/pre-production/manifests/manifest.yml
+      manifest: make-manifest-from-candidate/pre-production/manifests/manifest.yml
       releases: []
       stemcells: []
 
