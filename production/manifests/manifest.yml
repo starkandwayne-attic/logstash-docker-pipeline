@@ -24,7 +24,7 @@ meta:
   name: logstash-docker-production
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-    version: 2776
+    version: "2776"
 name: logstash-docker-production
 networks:
 - name: logstash_docker1
@@ -94,9 +94,9 @@ properties:
     name: logstash
 releases:
 - name: docker
-  version: 12
+  version: "12"
 - name: logstash-docker
-  version: 1
+  version: "1.0"
 resource_pools:
 - cloud_properties:
     name: random
@@ -104,7 +104,7 @@ resource_pools:
   network: logstash_docker1
   stemcell:
     name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-    version: 2776
+    version: "2776"
 update:
   canaries: 1
   canary_watch_time: 1000-30000
