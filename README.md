@@ -6,6 +6,9 @@ This project is an example http://concourse.ci pipeline for deploying the https:
 There are several `pipeline*.yml` to choose from:
 
 -	`pipeline-try-anything.yml` will deploy a single VM from current upstream BOSH releases & stemcells. Any new releases or stemcells, or changes to `try-anything/environment` or `try-anything/pipeline` templates will trigger a new deployment. It will indeed "try anything".
+
+![try-anything](http://cl.ly/image/0D001Z450e1e/try-anything.png)
+
 -	`pipeline-try-first-then-production.yml` will run two deployments. The first BOSH deployment is like `pipeline-try-anything.yml`. If it successfully deploys, then the winning combination of release/stemcell/templates is passed through to the production deployment.
 
 ![try-anything-production](http://cl.ly/image/3w15021g2c1W/try-anything_straight_to_production.png)
@@ -18,6 +21,32 @@ The example pipelines all assume the deployments are via the same BOSH - as such
 
 Usage
 -----
+
+The example pipelines above are designed to be deployed in sequence to grow out your pipeline.
+
+The templates in `try-anything`, `pre-production` and `production` are for bosh-lite; so bootup bosh-lite. It is convenient to deployment http://concourse.ci into that bosh-lite too. Due to the amount of Docker images and BOSH assets being downloaded, deploying bosh-lite to AWS might be a good idea.
+
+Next, create a `credentials.yml` based on `credentials.yml.example`.
+
+Next, deploy the `try-anything` pipeline:
+
+```
+./run-pipeline.sh pipeline-try-anything.yml credentials.yml
+```
+
+Once it is working, you can expand your pipeline to feed into a `production` deployment:
+
+```
+./run-pipeline.sh pipeline-try-first-then-production.yml credentials.yml
+```
+
+The `deploy-production` job should trigger immediately because the `deploy-try-anything` job has already previously succeeded.
+
+Finally, to add further deployment protection to `production` you might want to pre-deploy all changes through a `pre-production` deployment.
+
+```
+./run-pipeline.sh pipeline-try-pre-prod-prod.yml credentials.yml
+```
 
 Building/updating the base Docker image for tasks
 -------------------------------------------------
