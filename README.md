@@ -13,7 +13,7 @@ There are several `pipeline*.yml` to choose from:
 
 ![try-anything-production](http://cl.ly/image/3w15021g2c1W/try-anything_straight_to_production.png)
 
--	`pipeline-try-pre-prod-prod.yml` protects production by one additional stage `pre-production`. The `pre-production` stage is triggered by any successful `try-anything` deployment. It first deploys based on the last successful `production`, then upgrades to the last successful `try-anything`. If success, this becomes the candidate for `production`'s next deployment.
+-	`pipeline-try-pre-prod-prod.yml` protects production by one additional stage `pre-production`. The `pre-production` stage is triggered by any successful `try-anything` deployment. It first deploys based on the last successful `production`, then upgrades to the last successful `try-anything`. If success, this becomes the candidate for `production`'s next deployment. In this pipeline `deploy-production` job is manually triggered only - based on last successful `deploy-pre-production` job candidate.
 
 ![pre-prod](http://cl.ly/image/3s3P271d3703/pre-prod.png)
 

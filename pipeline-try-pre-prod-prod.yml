@@ -165,7 +165,7 @@ jobs:
     - get: candidate-assets
       resource: s3-candidate-assets
       passed: [deploy-pre-production]
-      trigger: true
+      trigger: false
     - {get: pipeline, resource: git-pipeline, trigger: false}
 
     # disabled during initial development
