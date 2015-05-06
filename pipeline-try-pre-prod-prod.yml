@@ -98,6 +98,22 @@ jobs:
       inputs:
       - {name: unpack-production-assets, path: .}
       run: {path: ./pre-production/bin/create_stub_make_manifest_and_save.sh}
+  - task: bosh-cli-version
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs: []
+      run:
+        path: bosh
+        args: [--version]
+  - task: bosh-info
+    config:
+      platform: linux
+      image: {{docker-hub-task-image}}
+      inputs: []
+      run:
+        path: bosh
+        args: [-n, -t, {{bosh-target}}, -u, {{bosh-username}}, -p, {{bosh-password}}, status]
   - task: delete-pre-prod-deployment
     config:
       platform: linux

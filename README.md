@@ -31,13 +31,13 @@ Next, create a `credentials.yml` based on `credentials.yml.example`.
 Next, deploy the `try-anything` pipeline:
 
 ```
-./run-pipeline.sh pipeline-try-anything.yml credentials.yml
+./run-pipeline.sh logstash-docker pipeline-try-anything.yml credentials.yml
 ```
 
 Once it is working, you can expand your pipeline to feed into a `production` deployment:
 
 ```
-./run-pipeline.sh pipeline-try-first-then-production.yml credentials.yml
+./run-pipeline.sh logstash-docker pipeline-try-first-then-production.yml credentials.yml
 ```
 
 The `deploy-production` job should trigger immediately because the `deploy-try-anything` job has already previously succeeded.
@@ -45,7 +45,7 @@ The `deploy-production` job should trigger immediately because the `deploy-try-a
 Finally, to add further deployment protection to `production` you might want to pre-deploy all changes through a `pre-production` deployment.
 
 ```
-./run-pipeline.sh pipeline-try-pre-prod-prod.yml credentials.yml
+./run-pipeline.sh logstash-docker pipeline-try-pre-prod-prod.yml credentials.yml
 ```
 
 Building/updating the base Docker image for tasks
@@ -56,7 +56,7 @@ Each task within all job build plans uses the same base Docker image for all dep
 All the resources used in the pipeline are shipped as independent Docker images and are outside the scope of this section.
 
 ```
-./run-pipeline.sh pipeline-build-docker-image.yml credentials.yml job-build-task-image
+./run-pipeline.sh logstash-docker-image pipeline-build-docker-image.yml credentials.yml job-build-task-image
 ```
 
 This will ask your targeted Concourse to pull down this project repository, and build the `task_docker_image/Dockerfile`, and push it to a Docker image on Docker Hub.
