@@ -3,6 +3,8 @@ Pipeline to deploy Logstash Docker
 
 This project is an example http://concourse.ci pipeline for deploying the https://github.com/cloudfoundry-community/logstash-docker-boshrelease/ BOSH release.
 
+[![](https://badge.imagelayers.io/drnic/logstash-docker-pipeline.svg)](https://imagelayers.io/?images=drnic/logstash-docker-pipeline:latest)
+
 There are several `pipeline*.yml` to choose from:
 
 -	`pipeline-try-anything.yml` will deploy a single VM from current upstream BOSH releases & stemcells. Any new releases or stemcells, or changes to `try-anything/environment` or `try-anything/pipeline` templates will trigger a new deployment. It will indeed "try anything".
